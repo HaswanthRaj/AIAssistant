@@ -1,6 +1,5 @@
 package com.haswanth.aiassistant;
 
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,8 +43,10 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         Message message = messages.get(position);
         if (holder instanceof AIViewHolder) {
             ((AIViewHolder) holder).aiMessage.setText(message.text);
+            ((AIViewHolder) holder).timestamp.setText(message.timestamp);
         } else if (holder instanceof UserViewHolder) {
             ((UserViewHolder) holder).userMessage.setText(message.text);
+            ((UserViewHolder) holder).timestamp.setText(message.timestamp);
         }
     }
 
@@ -55,20 +56,22 @@ public class ChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     static class AIViewHolder extends RecyclerView.ViewHolder {
-        TextView aiMessage;
+        TextView aiMessage, timestamp;
 
         AIViewHolder(@NonNull View itemView) {
             super(itemView);
-            aiMessage = itemView.findViewById(R.id.aiMessage);
+            aiMessage = itemView.findViewById(R.id.text_gchat_message_other);
+            timestamp = itemView.findViewById(R.id.text_gchat_timestamp_other);
         }
     }
 
     static class UserViewHolder extends RecyclerView.ViewHolder {
-        TextView userMessage;
+        TextView userMessage, timestamp;
 
         UserViewHolder(@NonNull View itemView) {
             super(itemView);
-            userMessage = itemView.findViewById(R.id.userMessage);
+            userMessage = itemView.findViewById(R.id.text_gchat_message_me);
+            timestamp = itemView.findViewById(R.id.text_gchat_timestamp_me);
         }
     }
 }

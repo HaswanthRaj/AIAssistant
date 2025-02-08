@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageButton;
+import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -12,9 +12,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import okhttp3.*;
 import org.json.JSONObject;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -22,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private ChatAdapter chatAdapter;
     private List<Message> messageList;
     private EditText inputMessage;
-    private ImageButton sendButton;
+    private Button sendButton;
 
     private static final String API_URL = "https://androidchatbot.haswanthraj777.workers.dev/";
 
@@ -32,9 +34,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Initialize views
-        chatRecyclerView = findViewById(R.id.chatRecyclerView);
-        inputMessage = findViewById(R.id.inputMessage);
-        sendButton = findViewById(R.id.sendButton);
+        chatRecyclerView = findViewById(R.id.recycler_gchat);
+        inputMessage = findViewById(R.id.edit_gchat_message);
+        sendButton = findViewById(R.id.button_gchat_send);
 
         // Set up the RecyclerView and adapter
         messageList = new ArrayList<>();
@@ -51,8 +53,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String userMessage = inputMessage.getText().toString().trim();
                 if (!userMessage.isEmpty()) {
+                    String timestamp = getCurrentTime();
+
                     // Add user's message to the chat
-                    messageList.add(new Message(userMessage, true)); // true for user
+                    messageList.add(new Message(userMessage, true, timestamp));
                     chatAdapter.notifyItemInserted(messageList.size() - 1);
                     chatRecyclerView.scrollToPosition(messageList.size() - 1);
 
@@ -60,20 +64,20 @@ public class MainActivity extends AppCompatActivity {
                     inputMessage.setText("");
 
                     // Fetch AI response from API
-                    fetchAIResponse(userMessage);
+                    fetchAIResponse(userMessage, timestamp);
                 }
             }
         });
     }
 
     private void loadInitialMessages() {
-        messageList.add(new Message("Hi there! How can I assist you today?", false)); // AI message
+        String timestamp = getCurrentTime();
+        messageList.add(new Message("Hi there! How can I assist you today?", false, timestamp)); // AI message
         chatAdapter.notifyDataSetChanged();
     }
 
-    private void fetchAIResponse(String userMessage) {
+    private void fetchAIResponse(String userMessage, String userTimestamp) {
         OkHttpClient client = new OkHttpClient();
-
 
         // Prepare the JSON body
         JSONObject jsonBody = new JSONObject();
@@ -109,13 +113,17 @@ public class MainActivity extends AppCompatActivity {
                 if (response.isSuccessful()) {
                     String responseBody = response.body().string();
                     try {
-                        // Parse the AI response (assuming the response is plain text or JSON with a "response" field)
+                        // Parse the AI response and extract the nested 'response' field
                         JSONObject jsonResponse = new JSONObject(responseBody);
-                        String aiResponse = jsonResponse.optString("response", "Oops! I couldn't understand that.");
+                        JSONObject responseObject = jsonResponse.optJSONObject("response");
+                        String aiResponse = responseObject != null ? responseObject.optString("response", "Oops! I couldn't understand that.") : "Oops! I couldn't understand that.";
+
+                        // Generate timestamp for AI response
+                        String aiTimestamp = getCurrentTime();
 
                         // Add the AI response to the chat
                         runOnUiThread(() -> {
-                            messageList.add(new Message(aiResponse, false)); // false for AI
+                            messageList.add(new Message(aiResponse, false, aiTimestamp));
                             chatAdapter.notifyItemInserted(messageList.size() - 1);
                             chatRecyclerView.scrollToPosition(messageList.size() - 1);
                         });
@@ -129,5 +137,9 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private String getCurrentTime() {
+        return new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date());
     }
 }
