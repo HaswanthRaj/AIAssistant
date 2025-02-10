@@ -1,5 +1,6 @@
 package com.haswanth.aiassistant;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -68,7 +69,17 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+
+        findViewById(R.id.button_speech_recognition).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, SpeechRecognitionActivity.class);
+                startActivity(intent);
+            }
+        });
     }
+
 
     private void loadInitialMessages() {
         String timestamp = getCurrentTime();

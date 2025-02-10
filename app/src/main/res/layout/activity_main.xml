@@ -59,13 +59,32 @@
             android:inputType="text"
             android:maxLines="6"
             tools:ignore="Autofill" />
+
         <Button
             android:id="@+id/button_gchat_send"
-            android:layout_width="64dp"
-            android:layout_height="48dp"
+            android:layout_width="53dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="21dp"
+            android:layout_marginEnd="0dp"
+            android:layout_toStartOf="@+id/button_speech_recognition"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/colorPrimary"
+            app:icon="@drawable/ic_send"
+            app:iconPadding="10dp" />
+
+        <Button
+            android:id="@+id/button_speech_recognition"
+            android:layout_width="51dp"
+            android:layout_height="54dp"
+            android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:background="?attr/selectableItemBackground"
-            android:text="Send"
-            android:textColor="@color/colorPrimary" />
+            android:layout_margin="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="344dp"
+            app:icon="@drawable/icon_voice"
+            app:iconPadding="15dp" />
+
     </RelativeLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
